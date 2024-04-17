@@ -12,6 +12,8 @@ router.get('/', async (req, res) => {
       reservation.*,
       reservation.id AS id,
       TO_CHAR(reservation.solicitationDate, 'DD/MM/YYYY') AS solicitationDate,
+      TO_CHAR(reservation.checkIn + INTERVAL '3 hours', 'DD/MM/YYYY - HH24:MI') AS checkin,
+      TO_CHAR(reservation.checkOut + INTERVAL '3 hours', 'DD/MM/YYYY - HH24:MI') AS checkout,
       room.id AS roomId,
       room.name,
       room.maxguest,
@@ -114,7 +116,7 @@ router.post('/add', async (req, res) => {
 router.put('/checkinout/:id', async (req, res) => {
   try {
     const reservationId = parseInt(req.params.id)
-    const { checkIn, checkOut } = req.body;
+    const { checkIn, checkOut, statusId } = req.body;
     const client = await pool.connect();
     const brazilTime = new Date();
     brazilTime.setTime(brazilTime.getTime() - (3 * 60 * 60 * 1000));
@@ -122,12 +124,12 @@ router.put('/checkinout/:id', async (req, res) => {
     let result;
 
     if (checkIn) {
-      result = await client.query(`UPDATE reservation SET checkIn = $2 WHERE id = $1`,
-        [reservationId, brazilTime]);
+      result = await client.query(`UPDATE reservation SET checkIn = $2, statusId = $3 WHERE id = $1`,
+        [reservationId, brazilTime, statusId]);
 
     } else if (checkOut) {
-      result = await client.query(`UPDATE reservation SET checkOut = $2 WHERE id = $1`,
-        [reservationId, brazilTime]);
+      result = await client.query(`UPDATE reservation SET checkOut = $2, statusId = $3 WHERE id = $1`,
+        [reservationId, brazilTime, statusId]);
     }
 
     client.release();
