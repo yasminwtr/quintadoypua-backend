@@ -7,6 +7,7 @@ require("dotenv-safe").config();
 
 const authRouter = require('./routes/authController');
 const clientRouter = require('./routes/clientController');
+const employeeRouter = require('./routes/employeeController');
 const reservationsRouter = require('./routes/reservationController');
 const roomRouter = require('./routes/roomController')
 
@@ -35,6 +36,7 @@ app.get('/', verifyJWT, (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/client', clientRouter);
+app.use('/employee', employeeRouter);
 app.use('/reservation', reservationsRouter);
 app.use('/room', roomRouter);
 

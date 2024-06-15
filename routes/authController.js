@@ -9,19 +9,19 @@ router.post('/login', async (req, res) => {
         const client = await pool.connect();
         const user = await client.query('SELECT * FROM client WHERE email = $1 and password = $2', [email, password]);
         if (user.rows.length > 0) {
-            const { id, email } = user.rows[0];
+            const { id, email, name } = user.rows[0];
             const role = 'client';
-            const token = jwt.sign({ id, email, role }, process.env.SECRET, { expiresIn: 600 });
+            const token = jwt.sign({ id, name, email, role }, process.env.SECRET, { expiresIn: 600 });
             client.release();
             return res.json({ auth: true, token });
         }
 
         const employee = await client.query('SELECT * FROM employee WHERE email = $1 and password = $2', [email, password]);
         if (employee.rows.length > 0) {
-            const { id, email } = employee.rows[0];
+            const { id, email, name } = employee.rows[0];
             const employeeId = employee.rows[0].id;
             const role = 'employee';
-            const token = jwt.sign({ id, email, employeeId, role }, process.env.SECRET, { expiresIn: 600 });
+            const token = jwt.sign({ id, email, name, employeeId, role }, process.env.SECRET, { expiresIn: 600 });
             client.release();
             return res.json({ auth: true, token });
         }
