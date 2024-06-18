@@ -4,11 +4,11 @@ const pool = require('../db');
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, employeeId } = req.body;
+    const { email, password, name, positionId} = req.body;
     const client = await pool.connect();
 
-    const result = await client.query(`INSERT INTO employee (email, password, name, employeeId) VALUES ($1, $2, $3, $4)`,
-      [email, password, name, employeeId]);
+    const result = await client.query(`INSERT INTO employee (email, password, name, positionId) VALUES ($1, $2, $3, $4)`,
+      [email, password, name, positionId]);
 
     client.release();
     res.status(201).json(result.rows[0]);
@@ -54,5 +54,39 @@ router.get('/roles', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+router.post('/edit/:id', async (req, res) => {
+  try {
+    const employeeId = parseInt(req.params.id)
+    const {name, email, password, positionId} = req.body;
+    const client = await pool.connect();
+    const result = await client.query(`
+    UPDATE employee SET name = $1, email = $2, password = $3, positionId = $4 WHERE id = $5`, [name, email, password, positionId, employeeId]);
+    client.release();
+    res.status(201).json({ message: 'Client updated successfully' });
+
+  } catch (err) {
+    console.error('Error executing query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.delete('/delete/:id', async (req, res) => {
+  try {
+    const clientId = parseInt(req.params.id)
+    const client = await pool.connect();
+    const result = await client.query(`
+    DELETE FROM employee WHERE id = $1`, [clientId]);
+    client.release();
+    console.log(result);
+    res.status(201).json({ message: 'Client deleted successfully' });
+
+  } catch (err) {
+    console.error('Erro ao executar o delete', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
 
 module.exports = router;
