@@ -52,8 +52,6 @@ CREATE TABLE reservationStatus (
 
 CREATE TABLE reservation (
     id SERIAL PRIMARY KEY,
-    clientId INTEGER REFERENCES client(id),
-    employeeId INTEGER REFERENCES employee(id),
     roomId INTEGER REFERENCES room(id),
     startDate DATE NOT NULL,
     endDate DATE NOT NULL,

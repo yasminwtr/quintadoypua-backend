@@ -13,7 +13,7 @@ router.post('/login', async (req, res) => {
             const role = 'client';
             const token = jwt.sign({ id, name, email, role }, process.env.SECRET, { expiresIn: 600 });
             client.release();
-            return res.json({ auth: true, token });
+            return res.json({ auth: true, token, role: role });
         }
 
         const employee = await client.query('SELECT * FROM employee WHERE email = $1 and password = $2', [email, password]);
@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
             const role = 'employee';
             const token = jwt.sign({ id, email, name, employeeId, role }, process.env.SECRET, { expiresIn: 600 });
             client.release();
-            return res.json({ auth: true, token });
+            return res.json({ auth: true, token, role: role });
         }
 
         client.release();

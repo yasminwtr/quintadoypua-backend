@@ -6,12 +6,34 @@ router.get('/', async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(`
-      SELECT room.*,
-      room.url as img
-      FROM room
-      INNER JOIN photo
-      ON photo.roomId = room.id`);
+      SELECT *
+      FROM room`);
     const rows = result.rows;
+    client.release();
+    res.json(rows);
+
+  } catch (err) {
+    console.error('Erro ao executar a consulta', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const roomId = parseInt(req.params.id)
+    const client = await pool.connect();
+    const result = await client.query(`
+      SELECT 
+      id,
+      name,
+      TO_CHAR(checkin, 'HH24:MI') AS checkin,
+      TO_CHAR(checkout, 'HH24:MI') AS checkout,
+      maxguest,
+      description,
+      daily
+      FROM room
+      WHERE id = $1`, [roomId]);
+    const rows = result.rows[0];
     client.release();
     res.json(rows);
 

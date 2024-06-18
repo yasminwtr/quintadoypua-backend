@@ -7,8 +7,8 @@ const pool = new Pool({
     password: '1234',
     port: 5432,
     max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    idleTimeoutMillis: 50000,
+    connectionTimeoutMillis: 5000,
 });
 
 pool.on('connect', () => {
