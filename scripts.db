@@ -25,7 +25,8 @@ CREATE TABLE room (
     checkIn TIME,
     checkOut TIME,
     maxGuest INTEGER,
-    daily NUMERIC(10, 2) NOT NULL
+    daily NUMERIC(10, 2) NOT NULL,
+    url VARCHAR(500)
 );
 
 CREATE TABLE services (
@@ -37,12 +38,6 @@ CREATE TABLE roomServices (
     id SERIAL PRIMARY KEY,
     serviceId INTEGER REFERENCES services(id),
     roomId INTEGER REFERENCES room(id)
-);
-
-CREATE TABLE photo (
-    id SERIAL PRIMARY KEY,
-    roomId INTEGER REFERENCES room(id),
-    url VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE reservationStatus (
