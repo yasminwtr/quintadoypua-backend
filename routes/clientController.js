@@ -55,11 +55,19 @@ router.get('/:id', async (req, res) => {
       const clientId = parseInt(req.params.id)
       const {name, email, password} = req.body;
       const client = await pool.connect();
-      const result = await client.query(`
-      UPDATE client SET name = $2, email = $3, password = $4 WHERE id = $1`, [clientId, name, email, password]);
-      client.release();
-      res.status(201).json({ message: 'Client updated successfully' });
-  
+      if (password == "") {
+        const result = await client.query(`
+          UPDATE client SET name = $2, email = $3 WHERE id = $1`, [clientId, name, email]);
+          client.release();
+          res.status(201).json({ message: 'Client updated successfully'}
+        );
+      }else{
+        const result = await client.query(`
+          UPDATE client SET name = $2, email = $3, password = $4 WHERE id = $1`, [clientId, name, email, password]);
+          client.release();
+          res.status(201).json({ message: 'Client updated successfully'}
+        );
+      }
     } catch (err) {
       console.error('Error executing query:', err);
       res.status(500).json({ error: 'Internal Server Error' });
