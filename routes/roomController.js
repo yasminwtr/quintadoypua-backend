@@ -30,7 +30,8 @@ router.get('/:id', async (req, res) => {
       TO_CHAR(checkout, 'HH24:MI') AS checkout,
       maxguest,
       description,
-      daily
+      daily,
+      url
       FROM room
       WHERE id = $1`, [roomId]);
     const rows = result.rows[0];
@@ -44,12 +45,12 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, maxguest, daily, url} = req.body;
   try {
     const client = await pool.connect();
     const result = await client.query(
-      'INSERT INTO room (name, description) VALUES ($1, $2) RETURNING *',
-      [name, description]
+      'INSERT INTO room (name, description, maxguest, daily, url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, description, maxguest, daily, url]
     );
     const newRow = result.rows[0];
     client.release();
